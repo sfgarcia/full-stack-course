@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './index.css'
 
 const Filter = ({ filter, handleFilterChange }) => {
   return (
@@ -48,7 +49,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [filter, setFilter] = useState('')
-  const [message, setMessage] = useState('yapoo')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
