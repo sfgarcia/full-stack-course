@@ -30,9 +30,16 @@ app.post('/api/persons', (request, response) => {
   const person = request.body
   person.id = Math.floor(Math.random() * 1000000)
 
-  if (!person.name) {
+  if (!person.name || !person.number) {
     return response.status(400).json({ 
       error: 'content missing' 
+    })
+  }
+
+  const existent_person = persons.find(my_person => my_person.name === person.name)
+  if (existent_person) {
+    return response.status(400).json({ 
+      error: 'name must be unique' 
     })
   }
 
