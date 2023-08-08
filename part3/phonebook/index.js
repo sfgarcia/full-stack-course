@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
     { 
       "id": 1,
@@ -23,6 +25,20 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
+
+app.post('/api/persons', (request, response) => {
+  const person = request.body
+  person.id = Math.floor(Math.random() * 1000000)
+
+  if (!person.name) {
+    return response.status(400).json({ 
+      error: 'content missing' 
+    })
+  }
+
+  persons = persons.concat(person)
+  response.json(person)
+})
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
