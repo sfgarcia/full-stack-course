@@ -3,6 +3,7 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const Phonebook = require('./models/phonebook')
+const { default: mongoose } = require('mongoose')
 
 app.use(express.json())
 morgan.token('request', function (req, res) { return JSON.stringify(req.body) })
@@ -45,33 +46,30 @@ app.post('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Phonebook.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find(person => person.id === Number(id))
-  
-  if (person) {
+  Phonebook.findById(request.params.id).then(person => {
     response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+  Phonebook.deleteOne({_id: new mongoose.Types.ObjectId(request.params.id)}).then(person => {
+    response.status(204).end()
+  })
 })
 
 app.get('/info', (request, response) => {
-  response.send(`
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${new Date()}</p>
-    `
-  )
+  Phonebook.find({}).then(persons => {
+    response.send(`
+      <p>Phonebook has info for ${persons.length} people</p>
+      <p>${new Date()}</p>
+      `)
+  })
 })
 
 const PORT = 3001
