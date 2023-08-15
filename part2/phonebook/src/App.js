@@ -86,22 +86,20 @@ const App = () => {
     if(newName === '' || newPhone === '') return
     const msg = `${newName} is already added to phonebook, replace the old number with a new one?`
     const new_person = persons.find(person => person.name === newName)
-    if(new_person != null) {
-      if(window.confirm(msg)) {
-        personService
-          .update(new_person.id, nameObject)
-          .then(returnedPerson => {
-            setPersons(persons.map(person => person.id !== new_person.id ? person : returnedPerson))
-          })
-          .catch(error => {
-            setErrorMessage(
-              `Information of ${newName} has already been removed from the server`
-            )
-            setTimeout(() => {
-              setErrorMessage(null)
-            }, 5000)
-          })
-      }
+    if(new_person != null && window.confirm(msg)) {
+      personService
+        .update(new_person.id, nameObject)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== new_person.id ? person : returnedPerson))
+        })
+        .catch(error => {
+          setErrorMessage(
+            `Information of ${newName} has already been removed from the server`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
     }
     else{
       personService
@@ -113,6 +111,12 @@ const App = () => {
             `Added ${returnedPerson.name}`
           )
           setTimeout(() => {setMessage(null)}, 5000)
+        })
+        .catch(error => {
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
   }
