@@ -4,7 +4,6 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const Phonebook = require('./models/phonebook')
-const { default: mongoose } = require('mongoose')
 
 app.use(cors())
 app.use(express.static('build'))
@@ -61,9 +60,11 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  Phonebook.deleteOne({_id: new mongoose.Types.ObjectId(request.params.id)}).then(person => {
-    response.status(204).end()
-  })
+  Phonebook.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.get('/info', (request, response) => {
@@ -79,3 +80,15 @@ const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
