@@ -1,10 +1,13 @@
 require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 const Phonebook = require('./models/phonebook')
 const { default: mongoose } = require('mongoose')
 
+app.use(cors())
+app.use(express.static('build'))
 app.use(express.json())
 morgan.token('request', function (req, res) { return JSON.stringify(req.body) })
 app.use(morgan(function (tokens, req, res) {
